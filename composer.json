@@ -1,5 +1,5 @@
 {
-    "name": "symbiote/silverstripe-oldman",
+    "name": "webbuilders-group/silverstripe-oldman",
     "description": "A simple cache purging module for Silverstripe.",
     "type": "silverstripe-vendormodule",
     "keywords": [
@@ -7,6 +7,11 @@
     ],
     "license": "BSD-3-Clause",
     "authors": [
+        {
+            "name": "Ed Chipman",
+            "homepage": "https://webbuildersgroup.com",
+            "role": "Developer"
+        },
         {
             "name": "Symbiote",
             "homepage": "https://www.symbiote.com.au/"
@@ -34,14 +39,8 @@
             "Symbiote\\Cloudflare\\Tests\\": "tests/"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "3.0.x-dev"
-        },
-        "installer-name": "oldman"
-    },
 	"replace": {
-		"silbinarywolf/silverstripe-oldman": "self.version"
+		"symbiote/silverstripe-oldman": "*"
 	},
     "prefer-stable": true,
     "minimum-stability": "dev"
