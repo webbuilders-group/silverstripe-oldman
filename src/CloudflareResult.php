@@ -17,6 +17,9 @@ class CloudflareResult
     public function __construct(array $files, array $errorRecords)
     {
         // Apply to this object
+        if (empty($errorRecords)) {
+            $this->successes = $files;
+        }
         $this->errors = $errorRecords;
     }
 

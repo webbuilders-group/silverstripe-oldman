@@ -2,6 +2,7 @@
 
 namespace Symbiote\Cloudflare;
 
+use SilverStripe\AssetAdmin\Controller\AssetAdmin;
 use SilverStripe\Assets\File;
 use SilverStripe\CMS\Controllers\CMSPageEditController;
 use SilverStripe\Control\Controller;
@@ -43,7 +44,7 @@ class FileExtension extends DataExtension
         // Make this only occur in context of the CMSPageEditController as we don't
         // want to add headers in a CLI task that purges pages for example.
         //
-        if (!($controller instanceof CMSPageEditController)) {
+        if (!($controller instanceof AssetAdmin)) {
             return false;
         }
         $result = false;
