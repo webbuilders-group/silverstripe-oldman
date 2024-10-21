@@ -2,21 +2,47 @@
 
 namespace Symbiote\Cloudflare;
 
+use SilverStripe\CMS\Controllers\CMSPageEditController;
+use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataExtension;
-use SilverStripe\Control\Controller;
 use Symbiote\Cloudflare\CloudflareResult;
-use SilverStripe\CMS\Controllers\CMSPageEditController;
 
 class SiteTreeExtension extends DataExtension
 {
+    public function onBeforePublishRecursive()
+    {
+        if (!Cloudflare::config()->enabled) {
+            return;
+        }
+
+        $this->owner->setField('_cfIsRecursivePublish', true);
+    }
+
     public function onAfterPublish()
     {
         if (!Cloudflare::config()->enabled) {
             return;
         }
-        $cloudflareResult = Injector::inst()->get(Cloudflare::CLOUDFLARE_CLASS)->purgePage($this->owner);
-        $this->addInformationToHeader($cloudflareResult);
+
+        if (!$this->owner->getField('_cfIsRecursivePublish')) {
+            $cloudflareResult = Injector::inst()->get(Cloudflare::CLOUDFLARE_CLASS)->purgePage($this->owner);
+            $this->addInformationToHeader($cloudflareResult);
+        }
+    }
+
+    public function onAdterPublishRecursive()
+    {
+        if (!Cloudflare::config()->enabled) {
+            return;
+        }
+
+        if ($this->owner->getField('_cfIsRecursivePublish')) {
+            $cloudflareResult = Injector::inst()->get(Cloudflare::CLOUDFLARE_CLASS)->purgePage($this->owner);
+            $this->addInformationToHeader($cloudflareResult);
+
+            $this->owner->setField('_cfIsRecursivePublish', null);
+        }
     }
 
     public function onAfterUnpublish()
