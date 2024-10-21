@@ -10,6 +10,8 @@ use Symbiote\Cloudflare\CloudflareResult;
 
 class SiteTreeExtension extends DataExtension
 {
+    private static $_pageBeingPublished = 0;
+
     public function onBeforePublishRecursive()
     {
         if (!Cloudflare::config()->enabled) {
@@ -17,6 +19,8 @@ class SiteTreeExtension extends DataExtension
         }
 
         $this->owner->setField('_cfIsRecursivePublish', true);
+
+        self::$_pageBeingPublished = $this->owner->ID;
     }
 
     public function onAfterPublish()
@@ -31,7 +35,7 @@ class SiteTreeExtension extends DataExtension
         }
     }
 
-    public function onAdterPublishRecursive()
+    public function onAfterPublishRecursive()
     {
         if (!Cloudflare::config()->enabled) {
             return;
@@ -42,6 +46,7 @@ class SiteTreeExtension extends DataExtension
             $this->addInformationToHeader($cloudflareResult);
 
             $this->owner->setField('_cfIsRecursivePublish', null);
+            self::$_pageBeingPublished = 0;
         }
     }
 
@@ -52,6 +57,15 @@ class SiteTreeExtension extends DataExtension
         }
         $cloudflareResult = Injector::inst()->get(Cloudflare::CLOUDFLARE_CLASS)->purgePage($this->owner);
         $this->addInformationToHeader($cloudflareResult);
+    }
+
+    /**
+     * Gets the ID of the page being published, returns 0 if no page is being recurrsively published
+     * @return int
+     */
+    public static function get_publishing_page()
+    {
+        return self::$_pageBeingPublished;
     }
 
     private function addInformationToHeader(CloudflareResult $cloudflareResult = null)

@@ -8,3 +8,7 @@ SilverStripe\CMS\Model\SiteTree:
 SilverStripe\Assets\File:
   extensions:
     - 'Symbiote\Cloudflare\FileExtension'
+
+DNADesign\Elemental\Models\BaseElement:
+  extensions:
+    - 'WebbuildersGroup\Cloudflare\Extensions\BaseElementExtension'
