@@ -2,7 +2,7 @@
 
 1. Install via composer.
 
-2. Configure in YML, example below:
+2. Configure in YML, example below. You can either use an [Account API Token](https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens) or a [User API Token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/).
 ```yml
 Symbiote\Cloudflare\Cloudflare:
   enabled: true
@@ -10,7 +10,7 @@ Symbiote\Cloudflare\Cloudflare:
   zone_id: '73a40b2c0c10f468cb658f67b9d46fff'
 ```
 
-Alternatively you can use you Global API Key:
+Alternatively you can use you [Global API Key (legacy)](https://developers.cloudflare.com/fundamentals/api/get-started/keys/):
 ```yml
 Symbiote\Cloudflare\Cloudflare:
   enabled: true
