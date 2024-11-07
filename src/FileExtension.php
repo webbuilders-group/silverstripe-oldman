@@ -3,14 +3,12 @@
 namespace Symbiote\Cloudflare;
 
 use SilverStripe\AssetAdmin\Controller\AssetAdmin;
-use SilverStripe\Assets\File;
-use SilverStripe\CMS\Controllers\CMSPageEditController;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DataExtension;
 use Symbiote\Cloudflare\CloudflareResult;
 
-class FileExtension extends DataExtension
+class FileExtension extends Extension
 {
     public function onAfterPublish()
     {

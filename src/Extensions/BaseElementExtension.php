@@ -3,13 +3,13 @@ namespace WebbuildersGroup\CloudFlare\Extensions;
 
 use SilverStripe\CMS\Controllers\CMSPageEditController;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DataExtension;
 use Symbiote\Cloudflare\Cloudflare;
 use Symbiote\Cloudflare\CloudflareResult;
 use Symbiote\Cloudflare\SiteTreeExtension;
 
-class BaseElementExtension extends DataExtension
+class BaseElementExtension extends Extension
 {
     /**
      * Handles purging the page after publishing if the parent was not being recursively published

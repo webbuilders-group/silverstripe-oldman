@@ -4,11 +4,11 @@ namespace Symbiote\Cloudflare;
 
 use SilverStripe\CMS\Controllers\CMSPageEditController;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Extension;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DataExtension;
 use Symbiote\Cloudflare\CloudflareResult;
 
-class SiteTreeExtension extends DataExtension
+class SiteTreeExtension extends Extension
 {
     private static $_pageBeingPublished = 0;
 
