@@ -2,22 +2,30 @@
 
 namespace Symbiote\Cloudflare;
 
-class PurgeURLTask extends \SilverStripe\Dev\BuildTask
+use SilverStripe\Dev\BuildTask;
+use SilverStripe\PolyExecution\PolyOutput;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+
+class PurgeURLTask extends BuildTask
 {
     use PurgeTask;
 
-    protected $title = 'Cloudflare Purge: URL';
+    protected static string $commandName = 'cloudflare-purge-url';
 
-    protected $description = 'Purges a single or multiple URLs, with an absolute or relative URL (ie. url="admin/,Security/" or url="http://myproductionsite.com/admin, http://myproductionsite.com/Security")';
+    protected string $title = 'Cloudflare Purge: URL';
 
-    protected $param_url = array();
+    protected static string $description = 'Purges a single or multiple URLs, with an absolute or relative URL (ie. url="admin/,Security/" or url="http://myproductionsite.com/admin, http://myproductionsite.com/Security")';
 
-    public function run($request)
+    protected $param_url = [];
+
+    public function run(InputInterface $input, PolyOutput $output): int
     {
-        $url = $request->getVar('purge_url');
+        $url = $input->getOption('purge_url');
         if (!$url) {
-            $this->log('Missing "purge_url" parameter.');
-            return;
+            $output->writeln('Missing "purge_url" parameter.');
+            return Command::FAILURE;
         }
 
         // Allow multiple URLs
@@ -29,13 +37,24 @@ class PurgeURLTask extends \SilverStripe\Dev\BuildTask
                 unset($urlList[$i]);
             }
         }
+
         $this->param_url = $urlList;
 
-        return $this->endRun($request);
+        return $this->endRun($input, $output);
     }
 
     public function callPurgeFunction(Cloudflare $client)
     {
         return $client->purgeURLs($this->param_url);
+    }
+
+    public function getOptions(): array
+    {
+        return array_merge(
+            [
+                new InputOption('purge_url', null, InputOption::VALUE_REQUIRED, 'Url to purge'),
+            ],
+            parent::getOptions(),
+        );
     }
 }

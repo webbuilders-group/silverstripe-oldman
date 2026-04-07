@@ -4,6 +4,10 @@ namespace Symbiote\Cloudflare;
 
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\PolyExecution\PolyOutput;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 //
 // NOTE(Jake): 2018-04-26
@@ -16,24 +20,21 @@ trait PurgeTask
 {
     abstract protected function callPurgeFunction(Cloudflare $client);
 
-    public function endRun($request)
+    public function endRun(InputInterface $input, PolyOutput $output)
     {
         $client = Injector::inst()->get(Cloudflare::CLOUDFLARE_CLASS);
         if (!$client->config()->enabled) {
-            $this->log('Cloudflare is not currently enabled in YML.');
+            $output->writeln('Cloudflare is not currently enabled in YML.');
             return;
         }
 
         // If accessing via web-interface, add an "are you sure" message.
         if (!Director::is_cli()) {
-            if ($request->getVar('purge') != true) {
-                $this->log('Append "?purge=true" to the URL to confirm execution.');
+            if ($input->getOption('purge') != true) {
+                $output->writeln('Append "?purge=true" to the URL to confirm execution.');
                 return;
             }
         }
-
-        $errorMessage = '';
-        $success = false;
 
         // Process
         $startTime = microtime(true);
@@ -46,32 +47,35 @@ trait PurgeTask
             $status = 'PURGE ERRORS';
             if ($errors) {
                 echo Director::is_cli() ? "\n" : '<br/>';
-                $this->log('Error(s):');
+                $output->writeln('Error(s):');
                 foreach ($errors as $error) {
-                    $this->log($error);
+                    $output->writeln($error);
                 }
             }
         }
 
         // If no successes or errors, assume success.
         // ie. this is for purge everything.
-        echo Director::is_cli() ? "\n" : '<br/>';
         if (!$errors) {
-            $this->log('SUCCESS');
+            $output->writeln('SUCCESS');
         } else {
-            $this->log($status.'. ('.count($errors).' failed)');
+            $output->writeln($status . '. (' . count($errors) . ' failed)');
+            return Command::FAILURE;
         }
-        $this->log('Time taken: '.$timeTakenInSeconds.' seconds.');
+
+        $output->writeln('Time taken: ' . $timeTakenInSeconds . ' seconds.');
+        return Command::SUCCESS;
     }
 
-    public function run($request)
+    public function execute(InputInterface $input, PolyOutput $output): int
     {
-        $this->endRun($request);
+        return $this->endRun($input, $output);
     }
 
-    protected function log($message)
+    public function getOptions(): array
     {
-        $newline = Director::is_cli() ? "\n" : "<br/>";
-        echo $message.$newline;
+        return [
+            new InputOption('input', null, InputOption::VALUE_OPTIONAL, 'Whether to actually perform the purge or not'),
+        ];
     }
 }

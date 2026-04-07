@@ -1,14 +1,17 @@
 <?php
-
 namespace Symbiote\Cloudflare;
 
-class PurgeImagesTask extends \SilverStripe\Dev\BuildTask
+use SilverStripe\Dev\BuildTask;
+
+class PurgeImagesTask extends BuildTask
 {
     use PurgeTask;
 
-    protected $title = 'Cloudflare Purge: Images';
+    protected static string $commandName = 'cloudflare-purge-images';
 
-    protected $description = 'Purges all image files.';
+    protected string $title = 'Cloudflare Purge: Images';
+
+    protected static string $description = 'Purges all image files.';
 
     public function callPurgeFunction(Cloudflare $client)
     {

@@ -2,13 +2,17 @@
 
 namespace Symbiote\Cloudflare;
 
-class PurgeAllTask extends \SilverStripe\Dev\BuildTask
+use SilverStripe\Dev\BuildTask;
+
+class PurgeAllTask extends BuildTask
 {
     use PurgeTask;
 
-    protected $title = 'Cloudflare Purge: Everything';
+    protected static string $commandName = 'cloudflare-purge-everything';
 
-    protected $description = 'Purges everything from the cache. WARNING: You need to be *really* sure you want this.';
+    protected string $title = 'Cloudflare Purge: Everything';
+
+    protected static string $description = 'Purges everything from the cache. WARNING: You need to be *really* sure you want this.';
 
     public function callPurgeFunction(Cloudflare $client)
     {

@@ -22,13 +22,13 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
-        "silverstripe/cms": "^4|^5",
-        "guzzlehttp/guzzle": "^6|^7"
+        "php": ">=8.3",
+        "silverstripe/cms": "^6",
+        "guzzlehttp/guzzle": "^7"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^11.3"
     },
     "scripts": {
         "phpcbf": "phpcbf -n src/ tests/"

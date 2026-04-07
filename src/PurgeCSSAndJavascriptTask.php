@@ -2,13 +2,17 @@
 
 namespace Symbiote\Cloudflare;
 
-class PurgeCSSAndJavascriptTask extends \SilverStripe\Dev\BuildTask
+use SilverStripe\Dev\BuildTask;
+
+class PurgeCSSAndJavascriptTask extends BuildTask
 {
     use PurgeTask;
 
-    protected $title = 'Cloudflare Purge: CSS and JavaScript';
+    protected static string $commandName = 'cloudflare-purge-css-javascript';
 
-    protected $description = 'Purges all CSS and JavaScript files.';
+    protected string $title = 'Cloudflare Purge: CSS and JavaScript';
+
+    protected static string $description = 'Purges all CSS and JavaScript files.';
 
     public function callPurgeFunction(Cloudflare $client)
     {

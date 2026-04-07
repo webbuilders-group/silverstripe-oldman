@@ -8,8 +8,8 @@ composer require webbuilders-group/silverstripe-oldman:~1.0
 
 ## Requirements
 
-* PHP 7.4+
-* Silverstripe 4+ | 5+
+* PHP 8.3+
+* Silverstripe 6+
 
 ## Documentation
 
