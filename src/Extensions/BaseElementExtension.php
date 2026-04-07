@@ -30,9 +30,9 @@ class BaseElementExtension extends Extension
      * Handles adding the results to the headers
      * @param CloudflareResult $cloudflareResult Cloudflare result to add
      */
-    private function addInformationToHeader(CloudflareResult $cloudflareResult = null)
+    private function addInformationToHeader(?CloudflareResult $cloudflareResult = null)
     {
-        if (!Controller::has_curr()) {
+        if (!Controller::curr()) {
             return false;
         }
         if (!$cloudflareResult) {

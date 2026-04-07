@@ -28,9 +28,9 @@ class FileExtension extends Extension
         $this->addInformationToHeader($cloudflareResult);
     }
 
-    private function addInformationToHeader(CloudflareResult $cloudflareResult = null)
+    private function addInformationToHeader(?CloudflareResult $cloudflareResult = null)
     {
-        if (!Controller::has_curr()) {
+        if (!Controller::curr()) {
             return false;
         }
         if (!$cloudflareResult) {

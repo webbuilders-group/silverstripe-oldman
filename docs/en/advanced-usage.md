@@ -9,19 +9,19 @@
 ## Dev/Tasks
 
 **Cloudflare Purge: All**
-- CLI Command: `php framework/cli-script.php dev/tasks/Symbiote-Cloudflare-PurgeAllTask`
+- CLI Command: `vendor/bin/sake tasks:cloudflare-purge-everything`
 - Purge everything from the Cloudflare cache. NOTE: This is not recommended on high-traffic websites.
 
 **Cloudflare Purge: CSS and JavaScript**
-- CLI Command: `php framework/cli-script.php dev/tasks/Symbiote-Cloudflare-PurgeCSSAndJavascriptTask`
+- CLI Command: `vendor/bin/sake tasks:cloudflare-purge-css-javascript`
 - Gets all CSS and JavaScript files in the Silverstripe project folder recursively and File records stored in the database, then tells Cloudflare they need purging.
 
 **Cloudflare Purge: Images**
-- CLI Command: `php framework/cli-script.php dev/tasks/Symbiote-Cloudflare-PurgeImagesTask`
+- CLI Command: `vendor/bin/sake tasks:cloudflare-purge-images`
 - Gets all image files in the Silverstripe project folder recursively and File records stored in the database, then tells Cloudflare they need purging. The file extensions are taken from the File::app_categories['image'] config and Cloudflare::image_file_extensions config respectively.
 
 **Cloudflare Purge: URL**
-- CLI Command: `php framework/cli-script.php dev/tasks/Symbiote-Cloudflare-PurgeURLTask "purge_url=admin/,Security/,https://myproduction.com/admin"`
+- CLI Command: `vendor/bin/sake tasks:cloudflare-purge-url "purge_url=admin/,Security/,https://myproduction.com/admin"`
 - Clears a comma-delimited list of URLs. Can either be relative or absolute URLs.
 
 ## Configuration
