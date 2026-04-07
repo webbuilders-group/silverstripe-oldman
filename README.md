@@ -21,4 +21,3 @@ composer require webbuilders-group/silverstripe-oldman:~1.0
 ## Credits
 
 * [Steadlane Cloudflare](https://github.com/steadlane/silverstripe-cloudflare) for being the basis for this module
-* [James Bell](https://github.com/jamesryanbell/cloudflare) for his Cloudflare Library

@@ -2,10 +2,6 @@
 
 namespace Symbiote\Cloudflare;
 
-use Cloudflare\API\Adapter\Guzzle as Cloudflare_Guzzle;
-use Cloudflare\API\Auth\APIKey as Cloudflare_APIKey;
-use Cloudflare\API\Auth\APIToken as Cloudflare_APIToken;
-use Cloudflare\API\Endpoints\Zones as Cloudflare_Zones;
 use SilverStripe\Assets\File;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Controller;
@@ -114,13 +110,25 @@ class Cloudflare
      *
      * @var array
      */
-    private static $image_file_extensions = array(
+    private static $image_file_extensions = [
         'svg',
         'webp',
-    );
+    ];
 
     /**
-     * @var Cloudflare_Zones
+     * Time in seconds before curl will timeout during connect
+     * @var int
+     */
+    private static $curl_connect_timeout = 5;
+
+    /**
+     * Time in seconds before curl will timeout
+     * @var int
+     */
+    private static $curl_timeout = 17;
+
+    /**
+     * @var \GuzzleHttp\Client
      */
     protected $client;
 
@@ -134,22 +142,30 @@ class Cloudflare
         $this->filesystem = Injector::inst()->get(self::FILESYSTEM_CLASS);
         if ($this->config()->enabled) {
             if ($this->config()->api_token) {
-                $this->client = new Cloudflare_Zones(
-                    new Cloudflare_Guzzle(
-                        new Cloudflare_APIToken(
-                            Injector::inst()->convertServiceProperty($this->config()->api_token)
-                        ),
-                    )
-                );
+                $this->client = new \GuzzleHttp\Client([
+                    'base_uri' => 'https://api.cloudflare.com/client/v4/zones/',
+                    'curl' => [
+                        (defined('CURLOPT_CONNECTTIMEOUT') ? CURLOPT_CONNECTTIMEOUT : 78) => $this->config()->curl_connect_timeout,
+                        (defined('CURLOPT_TIMEOUT') ? CURLOPT_TIMEOUT : 13) => $this->config()->curl_timeout,
+                    ],
+                    'headers'  => [
+                        'Accept' => 'application/json',
+                        'Authorization' => 'Bearer ' . Injector::inst()->convertServiceProperty($this->config()->api_token),
+                    ],
+                ]);
             } else {
-                $this->client = new Cloudflare_Zones(
-                    new Cloudflare_Guzzle(
-                        new Cloudflare_APIKey(
-                            Injector::inst()->convertServiceProperty($this->config()->email),
-                            Injector::inst()->convertServiceProperty($this->config()->auth_key)
-                        ),
-                    )
-                );
+                $this->client = new \GuzzleHttp\Client([
+                    'base_uri' => 'https://api.cloudflare.com/client/v4/zones/',
+                    'curl' => [
+                        (defined('CURLOPT_CONNECTTIMEOUT') ? CURLOPT_CONNECTTIMEOUT : 78) => $this->config()->curl_connect_timeout,
+                        (defined('CURLOPT_TIMEOUT') ? CURLOPT_TIMEOUT : 13) => $this->config()->curl_timeout,
+                    ],
+                    'headers'  => [
+                        'Accept' => 'application/json',
+                        'X-Auth-Email' => Injector::inst()->convertServiceProperty($this->config()->email),
+                        'X-AUth-Key' => Injector::inst()->convertServiceProperty($this->config()->auth_key),
+                    ],
+                ]);
             }
         }
     }
@@ -176,11 +192,19 @@ class Cloudflare
         }
 
         try {
-            $this->client->cachePurgeEverything($this->getZoneIdentifier());
-            return new CloudflareResult([], []);
+            $this->client->post(
+                $this->getZoneIdentifier() . '/purge_cache',
+                [
+                    'json' => [
+                        'purge_everything' => true,
+                    ],
+                ],
+            );
         } catch (Exception $e) {
             return new CloudflareResult([], [$e->getMessage()]);
         }
+
+        return new CloudflareResult([], []);
     }
 
     /**
@@ -267,10 +291,17 @@ class Cloudflare
 
         // Purge files
         $zoneIdentifier = $this->getZoneIdentifier();
-        $errors = array();
+        $errors = [];
         foreach (array_chunk($files, self::MAX_PURGE_FILES_PER_REQUEST) as $filesChunk) {
             try {
-                $this->client->cachePurge($zoneIdentifier, $filesChunk);
+                $this->client->post(
+                    $zoneIdentifier . '/purge_cache',
+                    [
+                        'json' => [
+                            'files' => $filesChunk,
+                        ],
+                    ],
+                );
             } catch (Exception $e) {
                 $errors[] = $e->getMessage();
             }
@@ -372,7 +403,14 @@ class Cloudflare
     {
         $errors = [];
         try {
-            $this->client->cachePurge($this->getZoneIdentifier(), $filesToPurge);
+            $this->client->post(
+                $this->getZoneIdentifier() . '/purge_cache',
+                [
+                    'json' => [
+                        'files' => $filesToPurge,
+                    ],
+                ],
+            );
         } catch (Exception $e) {
             $errors[] = $e->getMessage();
 

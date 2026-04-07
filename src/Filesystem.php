@@ -2,8 +2,8 @@
 
 namespace Symbiote\Cloudflare;
 
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
 use Symbiote\Cloudflare\Cloudflare;
 
 class Filesystem
@@ -103,6 +103,10 @@ class Filesystem
         while ($directory_stack) {
             $current_directory = array_shift($directory_stack);
             $current_directory = str_replace('\\', '/', $current_directory);
+            if (!is_dir($current_directory)) {
+                continue;
+            }
+
             $files = scandir($current_directory);
             foreach ($files as $filename) {
                 $filename = str_replace('\\', '/', $filename);
