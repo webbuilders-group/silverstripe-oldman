@@ -10,7 +10,9 @@ use Symfony\Component\Console\Input\InputOption;
 
 class PurgeURLTask extends BuildTask
 {
-    use PurgeTask;
+    use PurgeTask {
+        getOptions as purgeTaskOptions;
+    }
 
     protected static string $commandName = 'cloudflare-purge-url';
 
@@ -54,7 +56,7 @@ class PurgeURLTask extends BuildTask
             [
                 new InputOption('purge_url', null, InputOption::VALUE_REQUIRED, 'Url to purge'),
             ],
-            parent::getOptions(),
+            $this->purgeTaskOptions(),
         );
     }
 }

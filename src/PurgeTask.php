@@ -25,14 +25,14 @@ trait PurgeTask
         $client = Injector::inst()->get(Cloudflare::CLOUDFLARE_CLASS);
         if (!$client->config()->enabled) {
             $output->writeln('Cloudflare is not currently enabled in YML.');
-            return;
+            return Command::FAILURE;
         }
 
         // If accessing via web-interface, add an "are you sure" message.
         if (!Director::is_cli()) {
             if ($input->getOption('purge') != true) {
                 $output->writeln('Append "?purge=true" to the URL to confirm execution.');
-                return;
+                return Command::SUCCESS;
             }
         }
 
@@ -75,7 +75,7 @@ trait PurgeTask
     public function getOptions(): array
     {
         return [
-            new InputOption('input', null, InputOption::VALUE_OPTIONAL, 'Whether to actually perform the purge or not'),
+            new InputOption('purge', null, InputOption::VALUE_OPTIONAL, 'Whether to actually perform the purge or not'),
         ];
     }
 }
