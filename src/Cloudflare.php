@@ -13,6 +13,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\View\Requirements;
 use Symbiote\Multisites\Model\Site;
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 
 class Cloudflare
 {
@@ -143,7 +144,7 @@ class Cloudflare
         if ($this->config()->enabled) {
             if ($this->config()->api_token) {
                 $this->client = new \GuzzleHttp\Client([
-                    'base_uri' => 'https://api.cloudflare.com/client/v4/zones/',
+                    'base_uri' => 'https://api.cloudflare.com/client/v4/zones/' . $this->getZoneIdentifier() . '/',
                     'curl' => [
                         (defined('CURLOPT_CONNECTTIMEOUT') ? CURLOPT_CONNECTTIMEOUT : 78) => $this->config()->curl_connect_timeout,
                         (defined('CURLOPT_TIMEOUT') ? CURLOPT_TIMEOUT : 13) => $this->config()->curl_timeout,
@@ -155,7 +156,7 @@ class Cloudflare
                 ]);
             } else {
                 $this->client = new \GuzzleHttp\Client([
-                    'base_uri' => 'https://api.cloudflare.com/client/v4/zones/',
+                    'base_uri' => 'https://api.cloudflare.com/client/v4/zones/' . $this->getZoneIdentifier() . '/',
                     'curl' => [
                         (defined('CURLOPT_CONNECTTIMEOUT') ? CURLOPT_CONNECTTIMEOUT : 78) => $this->config()->curl_connect_timeout,
                         (defined('CURLOPT_TIMEOUT') ? CURLOPT_TIMEOUT : 13) => $this->config()->curl_timeout,
@@ -163,7 +164,7 @@ class Cloudflare
                     'headers'  => [
                         'Accept' => 'application/json',
                         'X-Auth-Email' => Injector::inst()->convertServiceProperty($this->config()->email),
-                        'X-AUth-Key' => Injector::inst()->convertServiceProperty($this->config()->auth_key),
+                        'X-Auth-Key' => Injector::inst()->convertServiceProperty($this->config()->auth_key),
                     ],
                 ]);
             }
@@ -193,7 +194,7 @@ class Cloudflare
 
         try {
             $this->client->post(
-                $this->getZoneIdentifier() . '/purge_cache',
+                'purge_cache',
                 [
                     'json' => [
                         'purge_everything' => true,
@@ -290,12 +291,11 @@ class Cloudflare
         $files = $this->getFilesToPurgeByExtensions($fileExtensions, false);
 
         // Purge files
-        $zoneIdentifier = $this->getZoneIdentifier();
         $errors = [];
         foreach (array_chunk($files, self::MAX_PURGE_FILES_PER_REQUEST) as $filesChunk) {
             try {
                 $this->client->post(
-                    $zoneIdentifier . '/purge_cache',
+                    'purge_cache',
                     [
                         'json' => [
                             'files' => $filesChunk,
@@ -404,7 +404,7 @@ class Cloudflare
         $errors = [];
         try {
             $this->client->post(
-                $this->getZoneIdentifier() . '/purge_cache',
+                'purge_cache',
                 [
                     'json' => [
                         'files' => $filesToPurge,
