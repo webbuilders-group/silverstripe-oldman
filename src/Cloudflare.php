@@ -13,7 +13,6 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\View\Requirements;
 use Symbiote\Multisites\Model\Site;
 use Exception;
-use GuzzleHttp\Exception\ClientException;
 
 class Cloudflare
 {
